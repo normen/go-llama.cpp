@@ -11,10 +11,11 @@ type ModelOptions struct {
 }
 
 type PredictOptions struct {
+	ReversePrompt                                     []string
 	Seed, Threads, Tokens, TopK, Repeat, Batch, NKeep int
-	TopP, Temperature, Penalty                 float64
-	F16KV                                      bool
-	IgnoreEOS                                  bool
+	TopP, Temperature, Penalty                        float64
+	F16KV                                             bool
+	IgnoreEOS                                         bool
 }
 
 type PredictOption func(p *PredictOptions)
@@ -82,6 +83,13 @@ func NewModelOptions(opts ...ModelOption) ModelOptions {
 
 var IgnoreEOS PredictOption = func(p *PredictOptions) {
 	p.IgnoreEOS = true
+}
+
+// SetReversePrompt sets the reverse prompt or the "stop" for generation output
+func SetReversePrompt(reversePrompt []string) PredictOption {
+	return func(p *PredictOptions) {
+		p.ReversePrompt = reversePrompt
+	}
 }
 
 // SetSeed sets the random seed for sampling text generation.

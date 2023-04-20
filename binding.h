@@ -1,4 +1,5 @@
 #ifdef __cplusplus
+#include <vector>
 extern "C" {
 #endif
 
@@ -6,7 +7,7 @@ extern "C" {
 
 void* load_model(const char *fname, int n_ctx, int n_parts, int n_seed, bool memory_f16, bool mlock);
 
-void* llama_allocate_params(const char *prompt, int seed, int threads, int tokens,
+void* llama_allocate_params(const char *prompt, const char **reverse_prompt, int reverse_count, int seed, int threads, int tokens,
                             int top_k, float top_p, float temp, float repeat_penalty, 
                             int repeat_last_n, bool ignore_eos, bool memory_f16, 
                             int n_batch, int n_keep);
@@ -19,4 +20,8 @@ int llama_predict(void* params_ptr, void* state_pr, char* result);
 
 #ifdef __cplusplus
 }
+
+std::vector<std::string> create_vector(const char** strings, int count);
+void delete_vector(std::vector<std::string>* vec);
+
 #endif

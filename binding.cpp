@@ -161,7 +161,7 @@ void llama_free_params(void* params_ptr) {
 }
 
 
-void* llama_allocate_params(const char *prompt, int seed, int threads, int tokens, int top_k,
+void* llama_allocate_params(const char *prompt, const char **reverse_prompt, int reverse_count, int seed, int threads, int tokens, int top_k,
                             float top_p, float temp, float repeat_penalty, int repeat_last_n, bool ignore_eos, bool memory_f16, int n_batch, int n_keep) {
     gpt_params* params = new gpt_params;
     params->seed = seed;
@@ -178,8 +178,13 @@ void* llama_allocate_params(const char *prompt, int seed, int threads, int token
     params->n_keep = n_keep;
 
     params->prompt = prompt;
+
+    if(reverse_count > 0) {
+      params->antiprompt = create_vector(reverse_prompt, reverse_count);
+    }
+
     params->ignore_eos = ignore_eos;
-    
+
     return params;
 }
 
@@ -194,4 +199,16 @@ void* load_model(const char *fname, int n_ctx, int n_parts, int n_seed, bool mem
     lparams.use_mlock  = mlock;
 
     return llama_init_from_file(fname, lparams);
+}
+
+std::vector<std::string> create_vector(const char** strings, int count) {
+    std::vector<std::string>* vec = new std::vector<std::string>;
+    for (int i = 0; i < count; i++) {
+      vec->push_back(std::string(strings[i]));
+    }
+    return *vec;
+}
+
+void delete_vector(std::vector<std::string>* vec) {
+    delete vec;
 }
